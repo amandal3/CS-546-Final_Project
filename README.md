@@ -1,3 +1,3 @@
 # CS-546-Final_Project
-# TEAM TORTLE
+# TEAM MASCOT: TORTLE
 By Besnik Balaj & Amanda Ly
