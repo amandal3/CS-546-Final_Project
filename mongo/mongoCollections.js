@@ -1,5 +1,5 @@
 //Don't need index file if we will just refer to this one file here
-//Currently only need to
+//Currently only need to reference it for DB finding
 const dbConnection = require("./mongoConnection");
 
 const getCollectionFn = collection => {
