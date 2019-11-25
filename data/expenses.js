@@ -1,38 +1,88 @@
+/*
+Author: @Besnik @Amanda
+*/
 const mongoColl = require("./../mongo/mongoCollections");
-const usersDB = mongoColl.users;
+const expenseDB = mongoColl.expenses;
 //  users: getCollectionFn("users"),
-const userID = require('mongodb').ObjectID;
+const expenseID = require('mongodb').ObjectID;
 
-async function create(name, animalType){
-	if (arguments.length > 2){
+async function create(name, category, amount, comment){ //make expense
+	//Should just recieve name of the expense or recieving multiple ids?
+	if (arguments.length > 4){
     throw "More than 2 arguments were given"
   }
-  if (arguments.length < 2){
+  if (arguments.length < 4){
     throw "Less than 2 arguments were given"
   }
 	if (typeof name === undefined){
     throw "Name argument is undefined"
   }
-  if (typeof animalType === undefined){
-    throw "animalType argument is undefined"
+	if (typeof category === undefined){
+    throw "category argument is undefined"
+  }
+	if (typeof amount === undefined){
+    throw "amount argument is undefined"
+  }
+	if (typeof comment === undefined){
+    throw "Comment argument is undefined"
   }
   if (typeof name !== 'string'){
     throw "The name given is not a string"
   }
-  if (typeof animalType !== 'string'){
-    throw "The animalType argument given is not a string"
+	if (typeof category !== 'string'){
+    throw "The category given is not a string"
   }
-	const pokeSquad = await pokemon();
-	let newPoke = {
-		name: name,
-		animalType: animalType,
-		likes: [], //new
-		posts: [] //new
+	if (typeof comment !== 'string'){
+    throw "The comment given is not a string"
+  }
+	if (typeof amount !== 'number'){
+    throw "The amount given is not a float"
+  }
+	if (Number.isNaN(amount)){
+    throw "The amount given is still not a float" //safety net cause can bypass top easily
+  }
+	const allExpenses = await expenseDB();
+	/*
+	//id - string -- make here
+	//category - string
+	//date Currently - an object with
+	/*
+		year - number (4 digit)
+		month - number
+		date - number day during month
+		day - mon - sun
+	*/
+	//amount - float
+	//comment- string
+
+	var today - new Date();
+	let newExpense = {
+		category: category,
+		date: {
+			year: today.getFullYear(),
+			month: today.getMonth(),
+			date: today.getDate(),
+			day: today.getDay()
+					},
+		amount: amount,
+		comment: comment
 	};
-	await pokeSquad.insertOne(newPoke);
-	if (pokeSquad.insertedCount === 0){
+	await allExpenses.insertOne(newExpense);
+	if (allExpenses.insertedCount === 0){
     throw "We couldn't add that animal (pokemon)"
   }
-	const newpokeId = pokeSquad.insertedId;
-	return newPoke;
+	const newExpenseID = allExpenses.insertedId;
+	/*
+	id: sdnfadgfyladgfhsadbf
+	category: category,
+	date: {
+		year: today.getFullYear(),
+		month: today.getMonth(),
+		date: today.getDate(),
+		day: today.getDay()
+				},
+	amount: amount,
+	comment: comment
+	*/
+	return newExpense;//??? dont need it but for debugging
 }
