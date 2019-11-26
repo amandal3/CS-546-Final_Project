@@ -6,13 +6,13 @@ const expenseDB = mongoColl.expenses;
 //  users: getCollectionFn("users"),
 const expenseID = require('mongodb').ObjectID;
 
-async function create(name, category, amount, comment){ //make expense
+async function create(name, category, amount, comment, recurring){ //make expense
 	//Should just recieve name of the expense or recieving multiple ids?
-	if (arguments.length > 4){
-    throw "More than 2 arguments were given"
+	if (arguments.length > 5){
+    throw "More than 5 arguments were given"
   }
-  if (arguments.length < 4){
-    throw "Less than 2 arguments were given"
+  if (arguments.length < 5){
+    throw "Less than 5 arguments were given"
   }
 	if (typeof name === undefined){
     throw "Name argument is undefined"
@@ -26,6 +26,9 @@ async function create(name, category, amount, comment){ //make expense
 	if (typeof comment === undefined){
     throw "Comment argument is undefined"
   }
+	if (typeof recurring === undefined){
+    throw "recurring argument is undefined"
+  }
   if (typeof name !== 'string'){
     throw "The name given is not a string"
   }
@@ -35,11 +38,17 @@ async function create(name, category, amount, comment){ //make expense
 	if (typeof comment !== 'string'){
     throw "The comment given is not a string"
   }
+	if (typeof recurring !== 'number'){
+    throw "The recurring given is not a string"
+  }
 	if (typeof amount !== 'number'){
     throw "The amount given is not a float"
   }
 	if (Number.isNaN(amount)){
     throw "The amount given is still not a float" //safety net cause can bypass top easily
+  }
+	if (Number.isNaN(recurring)){
+    throw "The recurring given is still not a INT" //safety net cause can bypass top easily
   }
 	const allExpenses = await expenseDB();
 	/*
@@ -56,6 +65,7 @@ async function create(name, category, amount, comment){ //make expense
 	//comment- string
 
 	var today - new Date();
+	var recurringTime = new Date(year, month, day);
 	let newExpense = {
 		category: category,
 		date: {
@@ -64,6 +74,10 @@ async function create(name, category, amount, comment){ //make expense
 			date: today.getDate(),
 			day: today.getDay()
 					},
+		reccuring:{
+			shoudlRecurr:reccuring,
+			lastTimeOccur: recurringTime
+		},
 		amount: amount,
 		comment: comment
 	};
