@@ -1,0 +1,31 @@
+<title>Expenses</title>
+<article class="searchReuslt">
+    <h1>Expenses Found</h1>
+    <h2>{{toSearch}}</h2>
+        <ul>
+            {{#each searchResult}}
+                <li><a href="/details/{{id}}">{{name}}</a></li>
+            {{/each}}
+        </ul>
+        <table style="width:100%">
+            <tr>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Comment</th>
+            </tr>
+            {{#each searchResult}}
+            <tr>
+                <td>{{category}}</td>
+                <td>{{date}}</td>
+                <td>{{amount}}</td>
+                <td>{{comment}}</td>
+            </tr>
+            {{/each}}
+        </table>
+        <a href="/daily">Another dailylisting</a>
+        <a href="/weekly">Another dailylisting</a>
+        <a href="/monthly">Another dailylisting</a>
+</article>
+
+
