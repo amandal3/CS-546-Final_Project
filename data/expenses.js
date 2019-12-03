@@ -7,7 +7,63 @@ const expenseDB = mongoColl.expenses;
 const expenseID = require('mongodb').ObjectID;
 const usersFunc = require("./users.js")
 
+//-------------------FindID--------------------//
+async function find(name,category, amount, comment, recurring){
+	/*
+	call function to get id prior to making request to other functions
+	meaning if in routes you need to do a remove, call this function first to grab an id
+	then with this id, pass it in to functions that need it
+	*/
+	if (arguments.length > 5){
+    throw "More than 5 arguments were given"
+  }
+  if (arguments.length < 5){
+    throw "Less than 5 arguments were given"
+  }
+	if (typeof name === undefined){
+    throw "Name argument is undefined"
+  }
+	if (typeof category === undefined){
+    throw "category argument is undefined"
+  }
+	if (typeof amount === undefined){
+    throw "amount argument is undefined"
+  }
+	if (typeof comment === undefined){
+    throw "Comment argument is undefined"
+  }
+	if (typeof recurring === undefined){
+    throw "recurring argument is undefined"
+  }
+  if (typeof name !== 'string'){
+    throw "The name given is not a string"
+  }
+	if (typeof category !== 'string'){
+    throw "The category given is not a string"
+  }
+	if (typeof comment !== 'string'){
+    throw "The comment given is not a string"
+  }
+	if (typeof recurring !== 'number'){
+    throw "The recurring given is not a string"
+  }
+	if (typeof amount !== 'number'){
+    throw "The amount given is not a float"
+  }
+	if (Number.isNaN(amount)){
+    throw "The amount given is still not a float" //safety net cause can bypass top easily
+  }
+	if (Number.isNaN(recurring)){
+    throw "The recurring given is still not a INT" //safety net cause can bypass top easily
+  }
+	const allExpenses = await expenseDB();
+	const theExpense = await allExpenses.findOne({name:name, category:category, comment:comment, recurring:recurring.toString(), amount:amount.toString()});
 
+	const theId = theExpense._id; //grab the id of that specific expense
+
+	return theId.toString(); //I am returning it as a string no matter what
+
+}
 //-------------------CREATE--------------------//
 async function create(name, category, amount, comment, recurring){ //make expense
 	//Should just recieve name of the expense or recieving multiple ids?
@@ -140,7 +196,7 @@ async function update(id, nname, ncategory, namount, ncomment, nrecurring){ //ma
 
 //-------------------REMOVE--------------------//
 async function Remove(id){
-	//still need to
+	//
 	if (arguments.length > 1){
 		throw "The amount of arguments given was more than 1"
 	}
@@ -202,6 +258,7 @@ async function getAll(){
 }
 
 module.exports = {
+	find,
 	create,
 	Remove,
 	update,
