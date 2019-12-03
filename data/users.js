@@ -8,6 +8,46 @@ const expensesFunc = require("./expenses.js")
 //Gotta make it so if a delete happens here gotta delete all expenses
 //Also if a expense deleted
 //So here I can store users and such but
+//-------------------FIND_ID--------------------//
+async function find(firstName,lastName, userName, hashPassword){
+	if (arguments.length > 4){
+    throw "More than 4 arguments were given"
+  }
+  if (arguments.length < 4){
+    throw "Less than 4 arguments were given"
+  }
+  if (typeof firstName === undefined){
+    throw "firstName argument is undefined"
+  }
+	if (typeof lastName === undefined){
+    throw "lastName argument is undefined"
+  }
+	if (typeof userName === undefined){
+    throw "userName argument is undefined"
+  }
+	if (typeof hashPassword === undefined){
+    throw "hashPassword argument is undefined"
+  }
+  if (typeof firstName !== 'string'){
+    throw "The firstName given is not a string"
+  }
+	if (typeof lastName !== 'string'){
+    throw "The lastName given is not a string"
+  }
+	if (typeof userName !== 'string'){
+    throw "The userName given is not a string"
+  }
+	if (typeof hashPassword !== 'string'){
+    throw "The hashPassword given is not a string"
+  }
+	const allUsers = await userDB();
+	const theUser = await allUsers.findOne({profile: {firstName: firstName, lastName:lastName, userName: userName, hashPassword: hashPassword}});
+	const usrID = theUser._id;
+
+	return usrID.toString();
+}
+
+//-------------------CREATE--------------------//
 async function create(firstName, lastName, userName, hashPassword){ //make expense
 	//Should just recieve name of the expense or recieving multiple ids?
 	if (arguments.length > 4){
@@ -17,29 +57,29 @@ async function create(firstName, lastName, userName, hashPassword){ //make expen
     throw "Less than 4 arguments were given"
   }
   if (typeof firstName === undefined){
-    throw "Name argument is undefined"
+    throw "firstName argument is undefined"
   }
 	if (typeof lastName === undefined){
-    throw "category argument is undefined"
+    throw "lastName argument is undefined"
   }
 	if (typeof userName === undefined){
-    throw "amount argument is undefined"
+    throw "userName argument is undefined"
   }
 	if (typeof hashPassword === undefined){
-    throw "Comment argument is undefined"
+    throw "hashPassword argument is undefined"
   }
   if (typeof firstName !== 'string'){
-    throw "The name given is not a string"
+    throw "The firstName given is not a string"
   }
 	if (typeof lastName !== 'string'){
-    throw "The category given is not a string"
+    throw "The lastName given is not a string"
   }
 	if (typeof userName !== 'string'){
-    throw "The comment given is not a string"
+    throw "The userName given is not a string"
   }
   //password gets sent through after hashing
-	if (typeof hashPassword !== 'number'){
-    throw "The recurring given is not a string"
+	if (typeof hashPassword !== 'string'){
+    throw "The hashPassword given is not a string"
   }
 
   const allUsers = await userDB();
