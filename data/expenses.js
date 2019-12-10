@@ -7,8 +7,8 @@ const expenseDB = mongoColl.expenses;
 const expenseID = require('mongodb').ObjectID;
 const usersFunc = require("./users.js")
 
-//-------------------FindID--------------------//
-async function find(name,category, amount, comment, recurring){
+//-------------------FindByParametes--------------------//
+async function findByParams(name,category, amount, comment, recurring){
 	/*
 	call function to get id prior to making request to other functions
 	meaning if in routes you need to do a remove, call this function first to grab an id
@@ -123,8 +123,8 @@ async function create(name, category, amount, comment, recurring){ //make expens
 			day: today.getDay()
 					},
 		reccuring:{
-			shoudlRecurr:reccuring,//pass in 'yes' or 'no' or '1' or '0'
-			lastTimeOccur: recurringTime
+			shoudlRecurr:reccuring,//0,1,2,3 refer to recurring daily/weekly/monthly/yearly so 5 means no recurring
+			lastTimeOccur: recurringTime // some number
 		},
 		amount: amount,
 		comment: comment
@@ -151,7 +151,9 @@ async function create(name, category, amount, comment, recurring){ //make expens
 	amount: amount,
 	comment: comment
 	*/
-	return newExpense;//??? dont need it but for debugging
+	//need to call in User function to add
+	let importantArr = [newExpenseID, recurring]; //I want this to pass the expense ID and recurring number for user function ot be called next
+	return importantArr;//??? dont need it but for debugging
 }
 
 
@@ -223,6 +225,7 @@ async function Remove(id){
 	//gotta remove it from the users array
 	////best to just link the two in some way but not access the mongo on both but individual
 	//
+
 	return yoinkedExp;
 }
 //-------------------Retrive One--------------------//
@@ -258,10 +261,10 @@ async function getAll(){
 }
 
 module.exports = {
-	find,
+	findByParams, //find an expense if have other parameters
 	create,
 	Remove,
 	update,
-	get,
+	get,//get is like findone if have id
 	getall
 }
