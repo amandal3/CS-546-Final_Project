@@ -54,7 +54,7 @@ async function removeExp(expID, usrID){
 	if (arguments.length < 2){
 		throw "Less than 2 argument was given"
 	}
-	if (typeof expid !== 'string'){
+	if (typeof expID !== 'string'){
 		throw "expid given was not a string"
 	}
 	if (typeof usrID !== 'string'){
@@ -84,7 +84,7 @@ async function addExp(expID, usrID, recurr){
 	if (arguments.length < 3){
 		throw "Less than 3 argument was given"
 	}
-	if (typeof expid !== 'string'){
+	if (typeof expID !== 'string'){
 		throw "expid given was not a string"
 	}
 	if (typeof usrID !== 'string'){
@@ -114,7 +114,7 @@ async function addExp(expID, usrID, recurr){
 		const possibleRecurrExpense = await allUsers.updateOne({_id:useID}, {$addToSet: {recurringExpenses: expenseID}});
 		return possibleRecurrExpense;
 	}
-	//cant do the double arr return here cause we don't want to add it to both 
+	//cant do the double arr return here cause we don't want to add it to both
 }
 //-------------------CREATE--------------------//
 async function create(firstName, lastName, userName, hashPassword){ //make expense
@@ -175,9 +175,39 @@ async function create(firstName, lastName, userName, hashPassword){ //make expen
 //-------------------UPDATE--------------------//
 async function update(id, nFname, nLname, nUserName, nHashPass){ //make expense
 	//Should just recieve name of the expense or recieving id?
-	if (typeof id !== 'string'){
-		throw "id given was not a string"
-	}
+	if (arguments.length > 5) {
+    throw "The amount of arguments given was more than 5";
+  }
+  if (arguments.length < 5) {
+    throw "The number of arguments given was less than 5";
+  }
+  if (typeof id === undefined) {
+    throw "The id given was not of type string/can't be converted to an ObjectID";
+  }
+  if (typeof id !== "string") {
+    throw "A non string argument was given";
+  }
+  //if type of argument is not null or not a string
+  if (typeof nFname !== 'string'){
+    if (typeof nFname !== "object"){
+      throw "Arg2 missing"
+    }
+  }
+  if (typeof nLname !== 'string'){
+    if (typeof nLname !== "object"){
+      throw "Arg3 missing"
+    }
+  }
+  if (typeof nUserName !== 'string'){
+    if (typeof nUserName !== "object"){
+      throw "Arg4 missing"
+    }
+  }
+  if (typeof nHashPass !== 'string'){
+    if (typeof nHashPass !== "object"){
+      throw "Arg5 missing"
+    }
+  }
   const useID = userID(id);
 	const allUsers = await userDB();
 	const possibleUser = await allUsers.findOne({_id:useID});
@@ -187,19 +217,19 @@ async function update(id, nFname, nLname, nUserName, nHashPass){ //make expense
 	}
 
 	if (nFname !== possibleUser.profile.firstName && nFname !== null){
-		const newFNameChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.$.firstName": nFname}});
+		const newFNameChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.firstName": nFname}});
 	}
 
 	if (nLname !== possibleUser.profile.lastName && nLname !== null){
-		const newLNameChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.$.lastName": nLname}});
+		const newLNameChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.lastName": nLname}});
 	}
 
 	if (nUserName !== possibleUser.profile.userName && nUserName !== null){
-		const newUsrNameChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.$.userName": nUserName}});
+		const newUsrNameChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.userName": nUserName}});
 	}
 
 	if (nHashPass !== possibleUser.profile.hashPassword && nHashPass !== null){
-		const newAmtChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.$.hashPassword": nHashPass}});
+		const newAmtChange = await allUsers.updateOne({_id:useID}, {$set: {"profile.hashPassword": nHashPass}});
 	}
 	//if wanna change comment/description
 	const possibleUser2 = await allUsers.findOne({_id:useID});
@@ -228,15 +258,37 @@ async function Remove(id){
 	if (possibleUser === null){
 		throw "No current User inside with that ID"
 	}
-  const yoinkedUsr = await allExpenses.removeOne({_id: useID});
+  const yoinkedUsr = await allUsers.removeOne({_id: useID});
 	if (yoinkedUsr.deletedCount === 0){
     throw "We could not delete the User with that id Given"
   }
 	//if we get here then we are holding the User with the information
-	let expArry = yoinkedUsr.expenses;
-	let recurrExpArry = yoinkedUsr.recurringExpenses;
+	let expArry = possibleUser.expenses;
+	let recurrExpArry = possibleUser.recurringExpenses;
 	let bothExpenses = [expArry, recurrExpArry];
 	return bothExpenses;//holds all ids that need to be removed, parse through at routes section
+}
+//-------------------Retrive One--------------------//
+async function get(id) {
+  if (arguments.length > 1) {
+    throw "The amount of arguments given was more than 1";
+  }
+  if (arguments.length < 1) {
+    throw "The amount of arguments given was less than 1";
+  }
+  if (typeof id !== "string") {
+    throw "The ID argument is needed to be passed in as a string";
+  }
+  if (id === undefined) {
+    throw "need ID to be provided";
+  }
+  const useID = userID(id);
+  const allUsers = await userDB();
+  const theUser = await allUsers.findOne({ _id: useID });
+  if (theUser === null) {
+    throw "There exists no user with that ID";
+  }
+  return theUser;
 }
 //-------------------GETALL--------------------//
 async function getAll(){
@@ -252,8 +304,9 @@ module.exports = {
 	findByParams,
 	update,
 	create,
-	remove,
+	Remove,
 	removeExp,
 	addExp,
-	getAll
+	getAll,
+	get
 }
