@@ -8,9 +8,10 @@ const expenseDB = mongoColl.expenses;
 const expenseID = require("mongodb").ObjectID;
 const usersFunc = require("./users.js");
 
-//-------------------FindID--------------------//
-async function find(name, category, amount, comment, recurring) {
-  /*
+
+//-------------------FindByParametes--------------------//
+async function findByParams(name,category, amount, comment, recurring){
+	/*
 	call function to get id prior to making request to other functions
 	meaning if in routes you need to do a remove, call this function first to grab an id
 	then with this id, pass it in to functions that need it
@@ -158,7 +159,9 @@ async function create(name, category, amount, comment, recurring) {
 	amount: amount,
 	comment: comment
 	*/
-  return newExpense; //??? dont need it but for debugging
+	//need to call in User function to add
+	let importantArr = [newExpenseID, recurring]; //I want this to pass the expense ID and recurring number for user function ot be called next
+	return importantArr;//??? dont need it but for debugging
 }
 
 //-------------------UPDATE--------------------//
@@ -241,19 +244,19 @@ async function Remove(id) {
   }
   const expID = expenseID(id);
   const allExpenses = await expenseDB();
+	const possibleExp = await allExpenses.findOne({_id: expID});
+	if (possibleExp === null){
+		throw "No current expense inside with that ID"
+	}
+  const yoinkedExp = await allExpenses.removeOne({_id: expID});
+	if (yoinkedExp.deletedCount === 0){
+    throw "We could not delete the animal with that id Given"
+  }
+	//gotta remove it from the users array
+	////best to just link the two in some way but not access the mongo on both but individual
+	//
 
-  const possibleExp = await allExpenses.findOne({ _id: expID });
-  if (possibleExp === null) {
-    throw "No current expense inside with that ID";
-  }
-  const yoinkedExp = await allExpenses.removeOne({ _id: expID });
-  if (yoinkedExp.deletedCount === 0) {
-    throw "We could not delete the animal with that id Given";
-  }
-  //gotta remove it from the users array
-  ////best to just link the two in some way but not access the mongo on both but individual
-  //
-  return yoinkedExp;
+	return yoinkedExp;
 }
 //-------------------Retrive One--------------------//
 async function get(id) {
