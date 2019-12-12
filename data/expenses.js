@@ -507,6 +507,8 @@ async function getAll() {
 
 module.exports = {
   findByParams,
+  shouldExpRecurrWithUsrId,
+  shouldExpRecurr,
   create,
   Remove,
   update,
