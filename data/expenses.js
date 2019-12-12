@@ -71,6 +71,174 @@ async function findByParams(name,category, amount, comment, recurring){
 
   return theId.toString(); //I am returning it as a string no matter what
 }
+//-------------------SHOULDRECURR?--------------------//
+async function shouldExpRecurr(id){ //id is expenses id
+  if (arguments.length > 1) {
+    throw "The amount of arguments given was more than 1";
+  }
+  if (arguments.length < 1) {
+    throw "The number of arguments given was less than 1";
+  }
+  if (typeof id === undefined) {
+    throw "The id given was not of type string/can't be converted to an ObjectID";
+  }
+  if (typeof id !== "string") {
+    throw "A non string argument was given";
+  }
+
+  const expID = expenseID(id);
+  const allExpenses = await expenseDB();
+	const possibleExp = await allExpenses.findOne({_id: expID});
+	if (possibleExp === null){
+		throw "No current expense inside with that ID"
+	}
+  var today = new Date();
+  let cyear = today.getFullYear();
+  let cmonth = today.getMonth();
+  let cdate = today.getDate();
+  let cday = today.getDay();
+
+  let recurringoption = possibleExp.recurring.shouldRecurr;
+  if (possibleExp.recurring.wasRecurred === 1){
+    return; //don't want to make a new one of it at all
+  }
+  if (recurringoption > 5 || recurringoption) {
+    throw "This is an invalid recurring option ya nut"
+  }
+  if (recurringoption === 5){
+    console.log('No need for recurr')
+    return;
+  }
+  let newRecChange = 0;
+  if (recurringoption === 4) {//recurring yearly
+    if((cyear - possibleExp.recurring.lastTimeOccur[0]) >= 1){
+      //then yes we should recurr
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      return newRecChange;
+    }
+  }
+  if (recurringoption === 3) {//recurring monthly
+    if((cmonth - possibleExp.recurring.lastTimeOccur[1]) >= 1){
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      return newRecChange;
+    }
+  }
+  if (recurringoption === 2) {//recurring weekly
+    //need to do the newdate and math here and check
+    let currentDate = new Date(cyear, cmonth, cdate);
+    let recordedDate = new Date (possibleExp.recurring.shouldRecurr[0],possibleExp.recurring.shouldRecurr[1],possibleExp.recurring.shouldRecurr[2]);
+    let constNumb = 1000*60*60*24;
+    let diff = Math.abs(currentDate-recordedDate);
+    let diff2 = Math.ceil(diff/constNumb)
+    if( diff2 >= 7){
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      return newRecChange;
+    }
+  }
+  if (recurringoption === 1) {//recurring daily
+    if((cday - possibleExp.recurring.lastTimeOccur[3]) >= 1){
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      return newRecChange;
+    }
+  }
+  return;
+}
+
+//-------------------SHOULDRECURRWITHUSRID?--------------------//
+async function shouldExpRecurrWithUsrId(id,usID){ //id is expenses id
+  if (arguments.length > 2) {
+    throw "The amount of arguments given was more than 2";
+  }
+  if (arguments.length < 2) {
+    throw "The number of arguments given was less than 2";
+  }
+  if (typeof id === undefined) {
+    throw "The id given was not of type string/can't be converted to an ObjectID";
+  }
+  if (typeof id !== "string") {
+    throw "A non string argument was given";
+  }
+  if (typeof usID === undefined) {
+    throw "The id given was not of type string/can't be converted to an ObjectID";
+  }
+  if (typeof usID !== "string") {
+    throw "A non string argument was given";
+  }
+
+  const expID = expenseID(id);
+  //le usID should be a string!
+  const allExpenses = await expenseDB();
+	const possibleExp = await allExpenses.findOne({_id: expID});
+	if (possibleExp === null){
+		throw "No current expense inside with that ID"
+	}
+  var today = new Date();
+  let cyear = today.getFullYear();
+  let cmonth = today.getMonth();
+  let cdate = today.getDate();
+  let cday = today.getDay();
+
+  let recurringoption = possibleExp.recurring.shouldRecurr;
+  if (possibleExp.recurring.wasRecurred === 1){
+    return; //don't want to make a new one of it at all
+  }
+  if (recurringoption > 5 || recurringoption) {
+    throw "This is an invalid recurring option ya nut"
+  }
+  if (recurringoption === 5){
+    console.log('No need for recurr')
+    return possibleExp;
+  }
+  let newRecChange = 0;
+  if (recurringoption === 4) {//recurring yearly
+    if((cyear - possibleExp.recurring.lastTimeOccur[0]) >= 1){
+      //then yes we should recurr
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      let newSameExpId = newSameExp._id;
+      let userGetNewExp = await usersFunc.addExp(id,usID,recurringoption);
+      return newRecChange;
+    }
+  }
+  if (recurringoption === 3) {//recurring monthly
+    if((cmonth - possibleExp.recurring.lastTimeOccur[1]) >= 1){
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      let newSameExpId = newSameExp._id;
+      let userGetNewExp = await usersFunc.addExp(id,usID,recurringoption);
+      return newRecChange;
+    }
+  }
+  if (recurringoption === 2) {//recurring weekly
+    //need to do the newdate and math here and check
+    let currentDate = new Date(cyear, cmonth, cdate);
+    let recordedDate = new Date (possibleExp.recurring.shouldRecurr[0],possibleExp.recurring.shouldRecurr[1],possibleExp.recurring.shouldRecurr[2]);
+    let constNumb = 1000*60*60*24;
+    let diff = Math.abs(currentDate-recordedDate);
+    let diff2 = Math.ceil(diff/constNumb)
+    if( diff2 >= 7){
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      let newSameExpId = newSameExp._id;
+      let userGetNewExp = await usersFunc.addExp(id,usID,recurringoption);
+      return newRecChange;
+    }
+  }
+  if (recurringoption === 1) {//recurring daily
+    if((cday - possibleExp.recurring.lastTimeOccur[3]) >= 1){
+      let newSameExp = await create (possibleExp.name,possibleExp.category,possibleExp.amount,possibleExp.comment,possibleExp.recurring.shouldRecurr); //need to make new one
+      newRecChange = await allExpenses.updateOne({ _id: expID },{ $set: { "recurring.wasRecurred": 1 } }); //make it marked to never be touched again during a recurring
+      let newSameExpId = newSameExp._id;
+      let userGetNewExp = await usersFunc.addExp(id,usID,recurringoption);
+      return newRecChange;
+    }
+  }
+  return;
+}
 //-------------------CREATE--------------------//
 async function create(name, category, amount, comment, recurring) {
   //make expense
@@ -120,7 +288,8 @@ async function create(name, category, amount, comment, recurring) {
   const allExpenses = await expenseDB();
 
   var today = new Date();
-  var recurringTime = new Date(year, month, day);
+  //var recurringTime = new Date(today.getFullYear(), today.getMonth(), today.getDay());
+  var recurringTime = [today.getFullYear(),today.getMonth(), today.getDate(), today.getDay()]
   let newExpense = {
     name: name,
     category: category,
@@ -130,9 +299,10 @@ async function create(name, category, amount, comment, recurring) {
       date: today.getDate(),
       day: today.getDay()
     },
-    reccuring: {
-      shoudlRecurr: reccuring, //pass in 'yes' or 'no' or '1' or '0'
-      lastTimeOccur: recurringTime
+    recurring: {
+      shouldRecurr: recurring, //pass in 'yes' or 'no' or '1' or '0'
+      lastTimeOccur: recurringTime,
+      wasRecurred: 0
     },
     amount: amount,
     comment: comment
@@ -160,7 +330,8 @@ async function create(name, category, amount, comment, recurring) {
 	comment: comment
 	*/
 	//need to call in User function to add
-	let importantArr = [newExpenseID, recurring]; //I want this to pass the expense ID and recurring number for user function ot be called next
+  //console.log(newExpense._id)
+	let importantArr = [newExpense, newExpense._id, recurring]; //I want this to pass the expense ID and recurring number for user function ot be called next
 	return importantArr;//??? dont need it but for debugging
 }
 
@@ -168,6 +339,47 @@ async function create(name, category, amount, comment, recurring) {
 async function update(id, nname, ncategory, namount, ncomment, nrecurring) {
   //make expense
   //Should just recieve name of the expense or recieving id?
+  if (arguments.length > 6) {
+    throw "The amount of arguments given was more than 6";
+  }
+  if (arguments.length < 6) {
+    throw "The number of arguments given was less than 6";
+  }
+  if (typeof id === undefined) {
+    throw "The id given was not of type string/can't be converted to an ObjectID";
+  }
+  if (typeof id !== "string") {
+    throw "A non string argument was given";
+  }
+  //if type of argument is not null or not a string
+  if (typeof nname !== 'string'){
+    if (typeof nname !== "object"){
+      throw "Arg2 missing"
+    }
+  }
+  if (typeof ncategory !== 'string'){
+    if (typeof ncategory !== "object"){
+      throw "Arg3 missing"
+    }
+  }
+  if (typeof namount !== 'number'){
+    if (typeof namount !== "object"){
+      throw "Arg4 missing"
+    }
+  }
+  if (typeof ncomment !== 'string'){
+    if (typeof ncomment !== "object"){
+      throw "Arg5 missing"
+    }
+  }
+
+  if (typeof nrecurring !== 'number'){
+    if (typeof nrecurring !== "object"){
+      throw "Arg6 missing"
+    }
+  }
+  //inside mongo is just string so i'm pretty sure amount and recurring should be string
+
   const expID = expenseID(id); //if id gets pass
   const allExpenses = await expenseDB();
   const possibleExp = await allExpenses.findOne({ _id: expID });
@@ -184,7 +396,7 @@ async function update(id, nname, ncategory, namount, ncomment, nrecurring) {
     //repeat this for others
     const newNameChange = await allExpenses.updateOne(
       { _id: expID },
-      { $set: { name: newname } }
+      { $set: { name: nname } }
     );
   }
   //if wanna change the category
@@ -196,14 +408,17 @@ async function update(id, nname, ncategory, namount, ncomment, nrecurring) {
     );
   }
   //if wanna change recurring status
+  //console.log(possibleExp)
   if (
-    nrecurring !== possibleExp.recurring.shouldlRecurr &&
-    nrecurring !== null
-  ) {
+    nrecurring !== possibleExp.recurring.shouldRecurr && nrecurring !== null) {
     //then name got change
     const newRecChange = await allExpenses.updateOne(
       { _id: expID },
-      { $set: { "recurring.$.amount": nrecurring } }
+      { $set: { "recurring.shouldRecurr": nrecurring } }
+    );
+    const newRecChange2 = await allExpenses.updateOne(
+      { _id: expID },
+      { $set: { "recurring.wasRecurred": 0 } }
     );
   }
   //if wanna change amount
@@ -263,7 +478,7 @@ async function get(id) {
   if (arguments.length > 1) {
     throw "The amount of arguments given was more than 1";
   }
-  if (argument.length < 1) {
+  if (arguments.length < 1) {
     throw "The amount of arguments given was less than 1";
   }
   if (typeof id !== "string") {
@@ -291,7 +506,7 @@ async function getAll() {
 }
 
 module.exports = {
-  find,
+  findByParams,
   create,
   Remove,
   update,
