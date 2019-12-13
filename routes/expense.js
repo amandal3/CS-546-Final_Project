@@ -60,4 +60,14 @@ router.put("/editExpense", async function(req, res, next) {
   }
 });
 
+router.get("/removeExpense/:id", async function(req, res, next) {
+  console.log(req.params.id);
+  try{
+    const result = await expenseData.Remove(req.params.id);
+    res.render("table");
+  }catch(e){
+    res.status(401).render('error', {message: "invalid input, go back to listing wiht the link below"});
+  }
+});
+
 module.exports = router;
