@@ -153,7 +153,7 @@ async function create(firstName, lastName, userName, hashPassword){ //make expen
 
   const allUsers = await userDB();
   let newUser = {
-    usersBudget: [],
+    usersBudget: [null, null, null, null], //budget order is daily/weekly/monthly/yearly -- 1/2/3/4
     expenses: [],
     recurringExpenses: [],
     profile: {
@@ -171,7 +171,116 @@ async function create(firstName, lastName, userName, hashPassword){ //make expen
 
   return newUser;
 }
-
+//-------------------UPDATEBUDGET--------------------//
+async function updateBudget(id,value,recurringVal){
+	//need to pass in userID, vlaue,recurring value
+	if (arguments.length > 3) {
+    throw "The amount of arguments given was more than 3";
+  }
+  if (arguments.length < 3) {
+    throw "The number of arguments given was less than 3";
+  }
+	if (typeof id === undefined) {
+    throw "The id given was not of type string/can't be converted to an ObjectID";
+  }
+  if (typeof id !== "string") {
+    throw "A non string argument was given";
+  }
+	if (recurringVal > 5 || recurringVal < 0){
+		throw "gave a value outside current accepted range"
+	}
+	if (recurringVal === 5){ //make this 5 a 4 which becomes a 3 anyway
+		console.log('Im considering it as a yearly one')//just a warning, gonna consider it yearly
+	}
+	if (typeof value !== 'number'){
+		throw "Value given wasn't a number"
+	}
+	if (typeof recurringVal !== 'number'){
+		throw "recurringVal given wasn't a number"
+	}
+	if (Number.isNaN(value)){
+		throw "valuve given isn't a number still"
+	}
+	if (Number.isNaN(recurringVal)){
+		throw "go home dog. Use as intended"
+	}
+	//noooooooW hold correct index
+	let trueIndex = 0;
+	if (recurringVal === 5){
+		trueIndex = 3;
+	}
+	else{
+		trueIndex = recurringVal - 1;
+	}
+	//daily/weekly/monthly/yearly -- 1/2/3/4
+	//array index is then 					0 1 2 3 <-- see simple math
+	const useID = userID(id); //no need to feel bad, wasn't easily explained lol
+	const allUsers = await userDB();//corgo blep
+	const possibleUser = await allUsers.findOne({_id:useID});
+	if (possibleUser === null){
+	//Just break out earlier than doing nothing lol
+		throw "No current user inside with that ID"
+	}
+	//nope thinking on how to cheese this like I did hw7
+	let theBudArr = possibleUser.usersBudget; // holds []
+	theBudArr[trueIndex] = value; //does this work? <--created a new one here
+	//wanna see the cheese
+	let newUserUpdate = await allUsers.updateOne({_id:useID}, {$set: {usersBudget: theBudArr}}); //push new budget list here aka update
+	//just replace the UserBudget in user cause we only replacing one so it'll keep others the same
+	return newUserUpdate;
+}
+//-----------------checkIfBudgetExist----------------------//
+async function doesBudValExist(id,recurringVal){
+	//
+	if (arguments.length > 2) {
+    throw "The amount of arguments given was more than 2";
+  }
+  if (arguments.length < 2) {
+    throw "The number of arguments given was less than 2";
+  }
+	if (typeof id === undefined) {
+    throw "The id given was not of type string/can't be converted to an ObjectID";
+  }
+  if (typeof id !== "string") {
+    throw "A non string argument was given";
+  }
+	if (recurringVal > 5 || recurringVal < 0){
+		throw "gave a value outside current accepted range"
+	}
+	if (recurringVal === 5){ //make this 5 a 4 which becomes a 3 anyway
+		console.log('Im considering it as a yearly one')//just a warning, gonna consider it yearly
+	}
+	if (typeof recurringVal !== 'number'){
+		throw "recurringVal given wasn't a number"
+	}
+	if (Number.isNaN(recurringVal)){
+		throw "go home dog. Use as intended"
+	}
+	//
+	let trueIndex = 0;
+	if (recurringVal === 5){
+		trueIndex = 3;
+	}
+	else{
+		trueIndex = recurringVal - 1;
+	}
+	//daily/weekly/monthly/yearly -- 1/2/3/4
+	//array index is then 					0 1 2 3 <-- see simple math
+	const useID = userID(id);
+	const allUsers = await userDB();
+	const possibleUser = await allUsers.findOne({_id:useID});
+	if (possibleUser === null){
+	//Just break out earlier than doing nothing lol
+		throw "No current user inside with that ID"
+	}
+	let theBudArr = possibleUser.usersBudget; // holds []
+	if (theBudArr[trueIndex] !== null){
+		return true //yeah budget exist
+	}
+	else{
+		return false;//budget does not exist
+	}
+}
 //-------------------UPDATE--------------------//
 async function update(id, nFname, nLname, nUserName, nHashPass){ //make expense
 	//Should just recieve name of the expense or recieving id?
@@ -305,6 +414,8 @@ module.exports = {
 	update,
 	create,
 	Remove,
+	doesBudValExist,
+	updateBudget, 
 	removeExp,
 	addExp,
 	getAll,
