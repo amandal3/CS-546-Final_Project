@@ -4,8 +4,14 @@ const router = express.Router();
 const expenseData = require("../data/expenses");
 
 /* GET users listing. */
-router.get("/", function(req, res, next) {
-  res.render("table");
+router.get("/", async function(req, res, next) {
+  try {
+    const allExpenses = await expenseData.getAll();
+    console.log(allExpenses);
+    res.render("table", { allExpenses });
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 router.get("/addExpense", function(req, res, next) {
