@@ -1,0 +1,22 @@
+<title>create</title>
+<article>
+    <h1>Add an expense to your tracker</h1>
+    <p>all fileds are required</p>
+    <form action="/add" method="POST" class="new-search-form">
+      <label for="category">Category</label>
+      <select name="category">
+        <option value="restaurant">restaurant</option>
+        <option value="travel">travel</option>
+        <option value="entertainment">entertainment</option>
+        <option value="merchandise">mershandise</option>
+        <option value="utilities">utilities</option>
+      </select>
+      <label for="Date">Date</label>
+      <input type="text" id="date" name="date" placeholder="mm/dd/yyyy" class="full-width-input"/>
+      <label for="amount">Amount</label>
+      <input type="number" id="amount" name="amount" placeholder="decimal number"/>
+      <label for="Comments">Comments</label>
+      <input type="text" id="comments" name="comments" placeholder="memo of your expense" class="full-width-input"/>
+      <button type="submit">Add</button>
+    </form>
+</article>
