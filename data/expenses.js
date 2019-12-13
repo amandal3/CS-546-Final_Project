@@ -193,6 +193,7 @@ async function shouldExpRecurrWithUsrId(id, usID) { //id is expenses id
         console.log('No need for recurr')
         return possibleExp;
     }
+    //helps alot with this check right here
     let newRecChange = 0;
     if (recurringoption === 4) { //recurring yearly
         if ((cyear - possibleExp.recurring.lastTimeOccur[0]) >= 1) {
@@ -300,7 +301,7 @@ async function create(name, category, amount, comment, recurring) {
             day: today.getDay()
         },
         recurring: {
-            shouldRecurr: recurring, //pass in 'yes' or 'no' or '1' or '0'
+            shouldRecurr: recurring, //recurring value tells me if expense is recurring as not/daily/weekly/monthly/yearly
             lastTimeOccur: recurringTime,
             wasRecurred: 0
         },
