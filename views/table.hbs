@@ -17,6 +17,7 @@
               <th>Amount</th>
               <th>Comment</th>
               <th>Action</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -27,6 +28,7 @@
               <td>{{amount}}</td>
               <td>{{comment}}</td>
               <td><a href="/expense/editExpense/{{_id}}">edit</a></td>
+              <td><a href="/expense/removeExpense/{{_id}}">remove</a></td>
             </tr>
             {{/each}}
 
