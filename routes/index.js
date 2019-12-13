@@ -12,7 +12,7 @@ const chartRoute = require("./charts");
 const constructorMethod = app => {
   app.get("/", (req, res) => {
     //does this go to layout or index? Both display something different
-    res.render("layout");
+    res.render("index");
   });
   app.use("/users", usersRouter);
   app.use("/expense", expenseRoute);
