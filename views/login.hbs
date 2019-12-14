@@ -1,11 +1,4 @@
 <div class="container">
-  <div class="row">
-    <div class="col-xl-12 col-lg-12 col-md-9">
-      <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 " style="color: white; margin: auto; margin-top: 5%;">Tortle Saves Money</h1>
-      </div>
-    </div>
-  </div>
 
   <!-- Outer Row -->
   <div class="row justify-content-center">
@@ -24,34 +17,22 @@
                 </div>
                 <form class="user">
                   <div class="form-group">
-                    <input type="email" class="form-control form-control-user" id="exampleInputEmail"
-                      aria-describedby="emailHelp" placeholder="Enter Email Address...">
+                    <input type="text" class="form-control form-control-user" id="firstName"
+                      aria-describedby="firstName" placeholder="Enter first name..." required>
                   </div>
                   <div class="form-group">
-                    <input type="password" class="form-control form-control-user" id="exampleInputPassword"
-                      placeholder="Password">
+                    <input type="text" class="form-control form-control-user" id="lastName"
+                      aria-describedby="lastName" placeholder="Enter last name..." required>
                   </div>
                   <div class="form-group">
-                    <div class="custom-control custom-checkbox small">
-                      <input type="checkbox" class="custom-control-input" id="customCheck">
-                      <label class="custom-control-label" for="customCheck">Remember Me</label>
-                    </div>
+                    <input type="text" class="form-control form-control-user" id="username"
+                      aria-describedby="username" placeholder="Enter username..." required>
                   </div>
-                  <a href="index.html" class="btn btn-primary btn-user btn-block">
-                    Login
-                  </a>
-                  <hr>
-                  <a href="index.html" class="btn btn-google btn-user btn-block">
-                    <i class="fab fa-google fa-fw"></i> Login with Google
-                  </a>
-                  <a href="index.html" class="btn btn-facebook btn-user btn-block">
-                    <i class="fab fa-facebook-f fa-fw"></i> Login with Facebook
-                  </a>
-                </form>
-                <hr>
-                <div class="text-center">
-                  <a class="small" href="forgot-password.html">Forgot Password?</a>
-                </div>
+                  <div class="form-group">
+                    <input type="password" class="form-control form-control-user" id="password"
+                      placeholder="Password" required>
+                  </div>
+                  <button class="btn btn-primary btn-user btn-block" type="submit" id="loginBtn">log in</button>
                 <div class="text-center">
                   <a class="small" href="/signUp">Create an Account!</a>
                 </div>
@@ -66,3 +47,5 @@
   </div>
 
 </div>
+
+<script src="/javascripts/login.js"></script>
