@@ -1,0 +1,41 @@
+{{!-- Author: Diaeddin Motan --}}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+  <!-- DataTales Example -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Expenses</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Comment</th>
+              <th>Action</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each allExpenses}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{category}}</td>
+              <td>{{amount}}</td>
+              <td>{{comment}}</td>
+              <td><a href="/expense/editExpense/{{_id}}">edit</a></td>
+              <td><a href="/expense/removeExpense/{{_id}}">remove</a></td>
+            </tr>
+            {{/each}}
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
