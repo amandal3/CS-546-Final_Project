@@ -12,6 +12,10 @@ const expenseData = require("../data/expenses");
 
 const constructorMethod = app => {
   app.get("/", async (req, res) => {
+    res.render("login", { layout: "layout2" });
+  });
+
+  app.get("/index", async (req, res) => {
     //does this go to layout or index? Both display something different
     //Get Budget and Expenses total to display them on dashboard
     const allExpenses = await expenseData.getAll();
