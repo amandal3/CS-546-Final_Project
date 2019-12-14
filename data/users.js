@@ -5,6 +5,8 @@ const mongoColl = require("./../mongo/mongoCollections");
 const userDB = mongoColl.users;
 const userID = require('mongodb').ObjectID;
 const expensesFunc = require("./expenses.js")
+const bcrypt = require("bcryptjs");
+const saltRounds = 16;
 //Gotta make it so if a delete happens here gotta delete all expenses
 //Also if a expense deleted
 //So here I can store users and such but
@@ -408,14 +410,52 @@ async function getAll(){
 	const users = await allUsers.find({}).toArray();
 	return users;
 }
-
+//-------------------RecieveUserByLogin--------------------//
+async function checkUsr(usrName, password){
+	if (arguments.length > 2){
+    throw "Too many arguments were given"
+  }
+	if (arguments.length < 2){
+    throw "Too little arguments were given"
+  }
+	if (usrName === undefined){
+		throw "usrName is needed"
+	}
+	if (password === undefined){
+		throw "password is needed"
+	}
+	if (typeof password !== 'string'){
+		throw "password needs to be of string"
+	}
+	if (typeof usrName !== 'string'){
+		throw "Username needs to be of string"
+	}
+	const allUsers = await userDB();
+	const users = await allUsers.find({}).toArray();
+	let i = 0;
+	let lowerUsrName = usrName.toLowerCase();
+	for (i;i<users.length;i++){
+		//grab each Object
+		let storedName = users[i].profile.userName;
+		let lowerStoredN = storedName.toLowerCase();
+		if (lowerUsrName === lowerStoredN){
+			const hash = await bcrypt.hash(password, saltRounds); //hash the password
+			const comparison = await bcrypt.compare(hash, users[i].profile.hashPassword); //compare the current hash password and stored password
+			if (comparison === true){
+				return user[i]; //I'll give you the entire UserObject, do what you wish with it
+			}
+		}
+	}
+	return false; //return false cause no user was found
+}
 module.exports = {
 	findByParams,
+	checkUsr,
 	update,
 	create,
 	Remove,
 	doesBudValExist,
-	updateBudget, 
+	updateBudget,
 	removeExp,
 	addExp,
 	getAll,
