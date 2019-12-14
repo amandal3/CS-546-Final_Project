@@ -20,10 +20,10 @@ $(document).ready(function() {
     ) {
       alert("You must fill out all user information");
     } else {
-      $.post("/users/addUser", userInfo, function(data) {
+      $.post("/signUp", userInfo, function(data) {
         if (data) {
           alert("User Added Successfully!");
-          window.location.replace("/");
+          window.location.replace("/login");
         }
       });
     }
