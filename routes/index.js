@@ -8,7 +8,6 @@ const signUpRoute = require("./signUp");
 const loginRoute = require("./login");
 const logoutRoute = require("./logout");
 const chartRoute = require("./charts");
-const registerRoute = require("./register");
 
 const constructorMethod = app => {
   app.get("/", (req, res) => {
@@ -21,7 +20,6 @@ const constructorMethod = app => {
   app.use("/login", loginRoute);
   app.use("/logout", logoutRoute);
   app.use("/charts", chartRoute);
-  app.use("/register", registerRoute);
   app.use("*", (req, res) => {
     res.status(404).json({ error: "Not found -- Rawr Test1" });
   });
