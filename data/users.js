@@ -439,8 +439,8 @@ async function checkUsr(usrName, password){
 		let storedName = users[i].profile.userName;
 		let lowerStoredN = storedName.toLowerCase();
 		if (lowerUsrName === lowerStoredN){
-			const hash = await bcrypt.hash(password, saltRounds); //hash the password
-			const comparison = await bcrypt.compare(hash, users[i].profile.hashPassword); //compare the current hash password and stored password
+			console.log('reached here');
+			const comparison = await bcrypt.compare(password, users[i].profile.hashPassword); //compare the current hash password and stored password
 			if (comparison === true){
 				return user[i]; //I'll give you the entire UserObject, do what you wish with it
 			}
