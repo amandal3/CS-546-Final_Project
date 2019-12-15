@@ -1,12 +1,13 @@
 var express = require("express");
-const userData = require("../data/users");
 const bcrypt = require("bcryptjs");
-const saltRounds = 16
+const userData = require("../data/users");
+
+const saltRounds = 16;
 var router = express.Router();
 
 /* GET users listing. */
 router.get("/", function(req, res, next) {
-  res.render("register");
+  res.render("register", { layout: "layout2" });
 });
 
 router.post("/", async function(req, res, next) {
@@ -17,7 +18,7 @@ router.post("/", async function(req, res, next) {
       req.body.firstName,
       req.body.lastName,
       req.body.username,
-      hash,
+      hash
     );
     console.log(result);
     res.redirect("/login");
