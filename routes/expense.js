@@ -11,7 +11,7 @@ router.get("/", async function(req, res, next) {
       res.render("login");
       return;
     }
-    let user = req.session.user;
+    const user = await userData.get(req.session.user._id);
     let onetimeexpenses = user.expenses;
     let rexpenses = user.recurringExpenses;
     let allExpenses = [];
@@ -85,6 +85,7 @@ router.put("/editExpense", async function(req, res, next) {
 router.get("/removeExpense/:id", async function(req, res, next) {
   console.log(req.params.id);
   try{
+    const resultuser = await userData.removeExp(req.params.id, req.session.user._id.toString());
     const result = await expenseData.Remove(req.params.id);
     res.render("table");
   }catch(e){

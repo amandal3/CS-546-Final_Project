@@ -9,7 +9,8 @@ router.get("/", async function(req, res, next) {
     if(!req.session.user){
         throw "you are not log in, no record";
     }
-    const user = req.session.user;
+    const user = await userData.get(req.session.user._id);
+    console.log(user.userBudget);
     const userBudget = {
         "daily": user.usersBudget[0],
         "weekly": user.usersBudget[1],
